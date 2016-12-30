@@ -5,17 +5,20 @@ package reactive;
  */
 public interface ReactiveTask<T> {
     /**
-     * 在宿主任务成功执行完毕后执行,于另一个线程
+     * executed after host task sucessfully finished
+     * note that this method will execuded probably by another thread(depends on which react executor you use) 
      */
     public void onSuccess(T result);
 
     /**
-     * 在宿主任务执行过程中出错后执行,于另一个线程
+     * executed after host task throws exception
+     * note that this method will execuded probably by another thread(depends on which react executor you use) 
      */
     public void onException(Throwable e);
 
     /**
-     * 在宿主任务被取消时执行,于另一个线程
+     * executed after host task interrupted
+     * note that this method will execuded probably by another thread(depends on which react executor you use) 
      */
     public void onCancellation();
 }
