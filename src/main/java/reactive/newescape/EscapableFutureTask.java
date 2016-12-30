@@ -27,15 +27,29 @@ public class EscapableFutureTask<T> extends ReactiveFutureTask<T> {
         return timeout;
     }
 
+    void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
-        TimeWheelHolder.TIME_WHEEL.deRegistry(this);
+        TimeWheelHolder.TIME_WHEEL.putConcurrentFence();
+        try {
+            TimeWheelHolder.TIME_WHEEL.deRegistry(this);
+        } finally {
+            TimeWheelHolder.TIME_WHEEL.releaseConcurrentFence();
+        }
         return super.cancel(mayInterruptIfRunning);
     }
 
     @Override
     protected void done() {
-        TimeWheelHolder.TIME_WHEEL.deRegistry(this);
+        TimeWheelHolder.TIME_WHEEL.putConcurrentFence();
+        try {
+            TimeWheelHolder.TIME_WHEEL.deRegistry(this);
+        } finally {
+            TimeWheelHolder.TIME_WHEEL.releaseConcurrentFence();
+        }
         super.done();
     }
 }

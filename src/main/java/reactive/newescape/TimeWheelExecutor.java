@@ -9,6 +9,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by GaoBinfang on 2016/12/16-11:26.
@@ -72,7 +73,12 @@ public class TimeWheelExecutor extends AbstractReactiveExecutor {
 
     public void schedule(EscapableFutureTask<?> future, long delay, TimeUnit unit) {
         future.setTimeout(delay, unit);
-        TimeWheelHolder.TIME_WHEEL.registry(future);
+        TimeWheelHolder.TIME_WHEEL.putConcurrentFence();
+        try {
+            TimeWheelHolder.TIME_WHEEL.registry(future);
+        } finally {
+            TimeWheelHolder.TIME_WHEEL.releaseConcurrentFence();
+        }
     }
 
     class Worker implements Runnable {
@@ -80,14 +86,21 @@ public class TimeWheelExecutor extends AbstractReactiveExecutor {
         public void run() {
             try {
                 final long now = System.currentTimeMillis();
-                TimeWheelHolder.TIME_WHEEL.map(new Callback<EscapableFutureTask<?>>() {
-                    @Override
-                    public void callback(EscapableFutureTask<?> item) {
-                        if (now >= (item.getTimeout() - interval)) {
-                            item.cancel(true);
+                TimeWheelHolder.TIME_WHEEL.putExclusiveFence();
+                try {
+                    TimeWheelHolder.TIME_WHEEL.map(new Callback<EscapableFutureTask<?>>() {
+                        @Override
+                        public void callback(EscapableFutureTask<?> item) {
+                            if (item.isDone()) {
+                                item.cancel(true);
+                            } else if (now >= (item.getTimeout() - interval)) {
+                                item.cancel(true);
+                            }
                         }
-                    }
-                });
+                    });
+                } finally {
+                    TimeWheelHolder.TIME_WHEEL.releaseExclusiveFence();
+                }
             } finally {
                 underling.schedule(this, interval, TimeUnit.MILLISECONDS);
             }

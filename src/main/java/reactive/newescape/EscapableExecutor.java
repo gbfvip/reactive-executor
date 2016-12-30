@@ -67,6 +67,7 @@ public class EscapableExecutor extends AbstractEscapableReactiveExecutor {
     @Deprecated
     @Override
     public void execute(Runnable command) {
+        underling.execute(command);
     }
 
     @Override
