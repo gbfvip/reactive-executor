@@ -27,10 +27,6 @@ public class EscapableFutureTask<T> extends ReactiveFutureTask<T> {
         return timeout;
     }
 
-    void setTimeout(long timeout) {
-        this.timeout = timeout;
-    }
-
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
         TimeWheelHolder.TIME_WHEEL.putConcurrentFence();
