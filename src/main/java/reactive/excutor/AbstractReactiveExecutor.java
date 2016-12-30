@@ -8,6 +8,8 @@ import java.util.concurrent.*;
 
 /**
  * Created by GaoBinfang on 2016/11/11-14:39.
+ * abstraction of reactive executor,using normal executor as underling to implement basic behaviors(submit,terminate,etc.)
+ * only difference is construct ReactiveFutureTask when calling newTaskFor
  */
 public abstract class AbstractReactiveExecutor extends AbstractExecutorService {
     protected ExecutorService minion;
