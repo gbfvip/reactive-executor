@@ -1,20 +1,16 @@
 package reactive.newescape;
 
-import reactive.excutor.AbstractReactiveExecutor;
 import reactive.internal.Callback;
-import reactive.internal.ReactiveFutureTask;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by GaoBinfang on 2016/12/16-11:26.
  */
-public class TimeWheelExecutor extends AbstractReactiveExecutor {
+public class TimeWheelExecutor {
     private ScheduledExecutorService underling = Executors.newScheduledThreadPool(1);
     private long interval;
 
@@ -23,52 +19,24 @@ public class TimeWheelExecutor extends AbstractReactiveExecutor {
         underling.submit(new Worker());
     }
 
-    @Override
     public void shutdown() {
         underling.shutdown();
     }
 
-    @Override
     public List<Runnable> shutdownNow() {
         return underling.shutdownNow();
     }
 
-    @Override
     public boolean isShutdown() {
         return underling.isShutdown();
     }
 
-    @Override
     public boolean isTerminated() {
         return underling.isTerminated();
     }
 
-    @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
         return underling.awaitTermination(timeout, unit);
-    }
-
-    @Deprecated
-    @Override
-    public void execute(Runnable command) {
-    }
-
-    @Deprecated
-    @Override
-    public ReactiveFutureTask<?> submit(Runnable task) {
-        return null;
-    }
-
-    @Deprecated
-    @Override
-    public <T> ReactiveFutureTask<T> submit(Runnable task, T resultValue) {
-        return null;
-    }
-
-    @Deprecated
-    @Override
-    public <T> ReactiveFutureTask<T> submit(Callable<T> task) {
-        return null;
     }
 
     public void schedule(EscapableFutureTask<?> future, long delay, TimeUnit unit) {
