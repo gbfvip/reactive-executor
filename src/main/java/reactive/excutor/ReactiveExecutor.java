@@ -7,17 +7,26 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by GaoBinfang on 2016/11/11-16:31.
+ * ReactiveExecutor allows you using react-coding-stlye onwards submitted tasks
+ * add react behaviors into ReactiveFutureTask,then ReactiveExecutor can transfer this ReactiveFutureTask's react behaviors to executor when the time is right
  */
 public class ReactiveExecutor extends AbstractReactiveExecutor {
     /**
-     * 包装给定的executor,适合大多数响应场景
+     * construct ReactiveExecutor using ordinary executor,
+     * store ordinary executor as underling,and this underling will take responsbility to execut submitted tasks
      */
     public ReactiveExecutor(ExecutorService executor) {
         minion = executor;
     }
 
     /**
-     * 使用默认CachedThreadPool作为执行器,只适合操作类型为短平快的场景
+     * construct ReactiveExecutor using default CachedThreadPool,
+     * this CachedThreadPool will take responsbility to execut submited tasks
+     * note that number of threads in CachedThreadPool is not limited,
+     * CachedThreadPool will create new thread as long as it thinks necessary,
+     * this will cause serious performence issue when submit tasks are not short-time tasks
+     * beacuse THREADS itself also consume resources
+     * only RAM-style tasks are recommend for this ReactiveExecutor
      */
     public ReactiveExecutor() {
         minion = Executors.newCachedThreadPool();
@@ -49,7 +58,8 @@ public class ReactiveExecutor extends AbstractReactiveExecutor {
     }
 
     /**
-     * 因为是直接执行任务,不返回任何future对象,在扩展executor中不推荐使用此方法
+     * this method dose not return any kind of future,so deprecated for public use
+     * only for internal use
      *
      * @param command the runnable task
      * @throws java.util.concurrent.RejectedExecutionException if this task cannot be
