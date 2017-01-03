@@ -14,7 +14,7 @@ public class ReactiveEntity<T> implements TaskExecutorPair<T> {
     private Throwable e;
 
     /**
-     * 使用默认FixedThreadPool(1)作为事件相应执行器,只适合响应操作类型为短平快的场景
+     * using FixedThreadPool as react event handler,suitable for short-live event
      */
     public ReactiveEntity(ReactiveTask reactiveTask) {
         realWork = reactiveTask;
@@ -22,7 +22,7 @@ public class ReactiveEntity<T> implements TaskExecutorPair<T> {
     }
 
     /**
-     * 使用给定的executor作为事件相应执行器,性能取决于传入的executor,适合大多数响应场景
+     * using given executor as react event handler,suitable for most cases
      */
     public ReactiveEntity(ReactiveTask reactiveTask, ExecutorService executor) {
         realWork = reactiveTask;

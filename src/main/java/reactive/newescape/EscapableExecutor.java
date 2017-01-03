@@ -8,13 +8,16 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by GaoBinfang on 2016/12/10-16:12.
- * 使用ScheduledExecutorService时,还有一个额外包装,应想办法避免
+ * this self escape executor use custom hash time wheel to implement this feature
+ * hash time wheel doesn't care task order,
+ * this makes every enqueue/dequeue cost constance O(1),but takes a dedicated thread scan this wheel every given delay
+ * this is a trade-off for such cases: add/cancel tasks frequently
  * <p/>
  */
 public class EscapableExecutor extends AbstractEscapableReactiveExecutor {
 
     /**
-     * 包装给定的executor,适合大多数响应场景并且可以设置超时相应事件的容忍度
+     * construct EscapableExecutor using given delay
      */
     public EscapableExecutor(ExecutorService executor, long delay, TimeUnit unit) {
         underling = executor;
@@ -22,7 +25,7 @@ public class EscapableExecutor extends AbstractEscapableReactiveExecutor {
     }
 
     /**
-     * 包装给定的executor,适合大多数响应场景
+     * construct EscapableExecutor using default delay(100ms)
      */
     public EscapableExecutor(ExecutorService executor) {
         underling = executor;

@@ -25,11 +25,12 @@ public class ReactiveFutureTask<T> extends FutureTask<T> {
     }
 
     /**
-     * 在宿主任务上添加事件相应机制
+     * add react event on future tasks
+     * since any thread should operate react pair while holding reactFence lock,
+     * successfully lock means either events are raised already(need raise event when add pair) or events keep stay still(just add,no further process needed)
      */
     public void addReactEvent(TaskExecutorPair<T> pair) {
         reactFence.lock();
-        //加锁成功之后,说明此future还没有开始执行回调列表,或者回调已经执行完毕
         try {
             if (done.get()) {
                 executeBasedOnCondition(pair);
@@ -56,12 +57,11 @@ public class ReactiveFutureTask<T> extends FutureTask<T> {
 
     @Override
     protected void done() {
-        //此标志位位于lock之外,用于确保添加回调的线程在进入lock之后,future只能是回调执行完毕状态或者还未执行状态
+        //set done before holding lock,to make sure threads doing add pair will only see two condition: callback pairs already raised,callback pairs not yet raised at all
         done.set(true);
         reactFence.lock();
         try {
             Iterator<TaskExecutorPair<T>> iterator = reactiveList.iterator();
-            //开始执行一个回调,就删掉一个,以利于回调任务实例完成之后快速回收
             while (iterator.hasNext()) {
                 TaskExecutorPair<T> pair = iterator.next();
                 iterator.remove();

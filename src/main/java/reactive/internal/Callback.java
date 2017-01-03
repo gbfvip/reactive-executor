@@ -5,7 +5,7 @@ package reactive.internal;
  */
 public interface Callback<T> {
     /**
-     * common callback,in order to bring some JS-style code
+     * common callback
      */
     public void callback(T item);
 }

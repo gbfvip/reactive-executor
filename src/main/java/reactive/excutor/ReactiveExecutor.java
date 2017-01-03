@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class ReactiveExecutor extends AbstractReactiveExecutor {
     /**
      * construct ReactiveExecutor using ordinary executor,
-     * store ordinary executor as underling,and this underling will take responsbility to execut submitted tasks
+     * store ordinary executor as underling,and this underling will take responsibility to execute submitted tasks
      */
     public ReactiveExecutor(ExecutorService executor) {
         minion = executor;
@@ -21,11 +21,11 @@ public class ReactiveExecutor extends AbstractReactiveExecutor {
 
     /**
      * construct ReactiveExecutor using default CachedThreadPool,
-     * this CachedThreadPool will take responsbility to execut submited tasks
+     * this CachedThreadPool will take responsibility to execute submitted tasks
      * note that number of threads in CachedThreadPool is not limited,
      * CachedThreadPool will create new thread as long as it thinks necessary,
-     * this will cause serious performence issue when submit tasks are not short-time tasks
-     * beacuse THREADS itself also consume resources
+     * this will cause serious performance issue when submit tasks are not short-time tasks
+     * because THREADS itself also consume resources
      * only RAM-style tasks are recommend for this ReactiveExecutor
      */
     public ReactiveExecutor() {

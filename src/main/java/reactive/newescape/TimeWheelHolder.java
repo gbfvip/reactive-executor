@@ -40,28 +40,28 @@ public enum TimeWheelHolder {
     }
 
     /**
-     * 使用readLock特性,当没有Worker在扫描整个map时,可以并行地放任务
+     * allow multiple readers concurrent put task into wheel
      */
     void putConcurrentFence() {
         readFence.lock();
     }
 
     /**
-     * 使用readLock特性,当没有Worker在扫描整个map时,可以并行地放任务
+     * allow multiple readers concurrent put task into wheel
      */
     void releaseConcurrentFence() {
         readFence.unlock();
     }
 
     /**
-     * 使用writeLock特性,当有Worker在扫描整个map时,停止放任务
+     * make sure only one writer scan wheel,and no reader operate during this interval
      */
     void putExclusiveFence() {
         writeFence.lock();
     }
 
     /**
-     * 使用writeLock特性,当有Worker在扫描整个map时,停止放任务
+     * make sure only one writer scan wheel,and no reader operate during this interval
      */
     void releaseExclusiveFence() {
         writeFence.unlock();
