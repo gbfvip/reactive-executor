@@ -117,8 +117,8 @@ public class BenchMarkTest {
     @Test
     public void testMultipleDividedOnSuccess() throws Exception {
         reactiveExecutor.shutdown();
-        reactiveExecutor = new ReactiveExecutor(Executors.newFixedThreadPool(2));//将原生executor包装为响应式风格executor
-        ExecutorService react = Executors.newFixedThreadPool(5);//手动指定时间相应的执行器
+        reactiveExecutor = new ReactiveExecutor(Executors.newFixedThreadPool(2));//make original executor become react executor
+        ExecutorService react = Executors.newFixedThreadPool(5);//manually set react handler
         task = new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
