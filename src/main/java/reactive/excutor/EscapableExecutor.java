@@ -10,12 +10,16 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by GaoBinfang on 2016/12/10-16:12.
- * 使用ScheduledExecutorService时,还有一个额外包装,应想办法避免
+ * this self escape executor use ScheduledThreadPool to implement this feature
+ * since ScheduledThreadPool uses delay queue to keep delay tasks in orders,
+ * this makes every enqueue/dequeue cost O(log n) due to binary search for tasks shift up/shift down
+ * not suitable for add/cancel tasks frequently
  * <p/>
  */
 public class EscapableExecutor extends AbstractReactiveExecutor {
     /**
-     * 包装给定的executor,适合大多数响应场景
+     * use given executor for tasks executor,suitable for most cases
+     * use ScheduledThreadPool and single thread for self escape watcher
      */
     public EscapableExecutor(ExecutorService executor) {
         minion = executor;
@@ -23,7 +27,8 @@ public class EscapableExecutor extends AbstractReactiveExecutor {
     }
 
     /**
-     * 使用默认CachedThreadPool作为执行器,只适合操作类型为短平快的场景
+     * use CachedThreadPool for tasks executor,only suitable for short-lived tasks(none IO)
+     * use ScheduledThreadPool and single thread for self escape watcher
      */
     public EscapableExecutor() {
         minion = Executors.newCachedThreadPool();
