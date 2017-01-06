@@ -3,9 +3,13 @@ package reactive.internal;
 import reactive.ReactiveTask;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * Created by GaoBinfang on 2016/11/11-15:38.
+ * post action for future task
+ * note that here I use spinning to avoid RejectedExecutionException when reactive tasks are submitted
+ * this maybe a performance lose in some cases,but no better way than this to make sure reactive happens right now
  */
 public class ReactiveEntity<T> implements TaskExecutorPair<T> {
     private ReactiveTask<T> realWork;
@@ -31,33 +35,55 @@ public class ReactiveEntity<T> implements TaskExecutorPair<T> {
 
     @Override
     public void executeOnCancellation() {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                realWork.onCancellation();
+        //simply use spinning to handle RejectedExecutionException,maybe a better way in the future
+        for (; ; ) {
+            try {
+                executor.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        realWork.onCancellation();
+                    }
+                });
+                break;
+            } catch (RejectedExecutionException e) {
             }
-        });
+        }
     }
 
     @Override
     public void executeOnSuccess(T parameter) {
         this.result = parameter;
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                realWork.onSuccess(result);
+        //simply use spinning to handle RejectedExecutionException,maybe a better way in the future
+        for (; ; ) {
+            try {
+                executor.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        realWork.onSuccess(result);
+                    }
+                });
+                break;
+            } catch (RejectedExecutionException e) {
             }
-        });
+        }
+
     }
 
     @Override
     public void executeOnException(Throwable throwable) {
         this.e = throwable;
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                realWork.onException(e);
+        //simply use spinning to handle RejectedExecutionException,maybe a better way in the future
+        for (; ; ) {
+            try {
+                executor.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        realWork.onException(e);
+                    }
+                });
+                break;
+            } catch (RejectedExecutionException e) {
             }
-        });
+        }
     }
 }
