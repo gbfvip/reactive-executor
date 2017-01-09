@@ -74,7 +74,7 @@ public class ReactiveFutureTask<T> extends FutureTask<T> {
             Iterator<TaskExecutorPair<T>> iterator = innerList.iterator();
             while (iterator.hasNext()) {
                 TaskExecutorPair<T> pair = iterator.next();
-                iterator.remove();
+                iterator.remove();//help GC,we don't want task already finished,but "this" still hold reference
                 executeBasedOnCondition(pair);
             }
         }
