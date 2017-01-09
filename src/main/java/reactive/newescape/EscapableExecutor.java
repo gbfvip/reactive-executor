@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * this self escape executor use custom hash time wheel to implement this feature
  * hash time wheel doesn't care task order,
  * this makes every enqueue/dequeue cost constance O(1),but takes a dedicated thread scan this wheel every given delay
- * this is a trade-off for such cases: add/cancel tasks frequently
+ * this is a trade-off for such cases: matters throughput more,cost is the possibility of STW(no enqueue/dequeue allowed when scan this wheel)
  * <p/>
  */
 public class EscapableExecutor extends AbstractEscapableReactiveExecutor {
@@ -33,7 +33,7 @@ public class EscapableExecutor extends AbstractEscapableReactiveExecutor {
     }
 
     /**
-     * 使用默认CachedThreadPool作为执行器,只适合操作类型为短平快的场景
+     * construct EscapableExecutor using default delay(100ms)
      */
     public EscapableExecutor() {
         underling = Executors.newCachedThreadPool();
