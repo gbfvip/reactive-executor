@@ -60,15 +60,23 @@ public class ReactiveFutureTask<T> extends FutureTask<T> {
         //set done before holding lock,to make sure threads doing add pair will only see two condition: callback pairs already raised,callback pairs not yet raised at all
         done.set(true);
         reactFence.lock();
+        //since we have spinning in executeOnXXX(may cost some time)
+        //innerList here is suppose to narrow down lock time
+        //because as a executor,fast submit is a must,we don't want submit/cancel have block issue
+        List<TaskExecutorPair<T>> innerList;
         try {
-            Iterator<TaskExecutorPair<T>> iterator = reactiveList.iterator();
+            innerList = reactiveList;
+            reactiveList = null;
+        } finally {
+            reactFence.unlock();
+        }
+        if (innerList != null) {
+            Iterator<TaskExecutorPair<T>> iterator = innerList.iterator();
             while (iterator.hasNext()) {
                 TaskExecutorPair<T> pair = iterator.next();
                 iterator.remove();
                 executeBasedOnCondition(pair);
             }
-        } finally {
-            reactFence.unlock();
         }
     }
 
