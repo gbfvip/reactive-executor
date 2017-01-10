@@ -4,6 +4,8 @@ import reactive.ReactiveTask;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by GaoBinfang on 2016/11/11-15:38.
@@ -12,6 +14,7 @@ import java.util.concurrent.RejectedExecutionException;
  * this maybe a performance lose in some cases,but no better way than this to make sure reactive happens right now
  */
 public class ReactiveEntity<T> implements TaskExecutorPair<T> {
+    private static final Logger log = Logger.getLogger(ReactiveEntity.class.getName());
     private ReactiveTask<T> realWork;
     private ExecutorService executor;
     private T result;
@@ -46,6 +49,9 @@ public class ReactiveEntity<T> implements TaskExecutorPair<T> {
                 });
                 break;
             } catch (RejectedExecutionException e) {
+            } catch (Throwable t) {
+                log.log(Level.SEVERE, "Exception while raising cancellation event to executor " + executor, e);
+                break;
             }
         }
     }
@@ -64,6 +70,9 @@ public class ReactiveEntity<T> implements TaskExecutorPair<T> {
                 });
                 break;
             } catch (RejectedExecutionException e) {
+            } catch (Throwable t) {
+                log.log(Level.SEVERE, "Exception while raising success event to executor " + executor, e);
+                break;
             }
         }
 
@@ -83,6 +92,9 @@ public class ReactiveEntity<T> implements TaskExecutorPair<T> {
                 });
                 break;
             } catch (RejectedExecutionException e) {
+            } catch (Throwable t) {
+                log.log(Level.SEVERE, "Exception while raising exception event to executor " + executor, e);
+                break;
             }
         }
     }
