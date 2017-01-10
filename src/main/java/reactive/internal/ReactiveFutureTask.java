@@ -33,7 +33,7 @@ public class ReactiveFutureTask<T> extends FutureTask<T> {
         reactFence.lock();
         try {
             if (done.get()) {
-                executeBasedOnCondition(pair);
+                raiseEvent(pair);
             } else {
                 reactiveList.add(pair);
             }
@@ -75,12 +75,12 @@ public class ReactiveFutureTask<T> extends FutureTask<T> {
             while (iterator.hasNext()) {
                 TaskExecutorPair<T> pair = iterator.next();
                 iterator.remove();//help GC,we don't want task already finished,but "innerList" still hold reference
-                executeBasedOnCondition(pair);
+                raiseEvent(pair);
             }
         }
     }
 
-    private void executeBasedOnCondition(TaskExecutorPair<T> pair) {
+    private void raiseEvent(TaskExecutorPair<T> pair) {
         if (super.isCancelled()) {
             pair.executeOnCancellation();
         } else {
