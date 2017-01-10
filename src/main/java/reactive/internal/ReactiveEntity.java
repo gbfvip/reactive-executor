@@ -34,7 +34,7 @@ public class ReactiveEntity<T> implements TaskExecutorPair<T> {
     }
 
     @Override
-    public void executeOnCancellation() {
+    public void raiseCancellationEvent() {
         //simply use spinning to handle RejectedExecutionException,maybe a better way in the future
         for (; ; ) {
             try {
@@ -51,7 +51,7 @@ public class ReactiveEntity<T> implements TaskExecutorPair<T> {
     }
 
     @Override
-    public void executeOnSuccess(T parameter) {
+    public void raiseSuccessEvent(T parameter) {
         this.result = parameter;
         //simply use spinning to handle RejectedExecutionException,maybe a better way in the future
         for (; ; ) {
@@ -70,7 +70,7 @@ public class ReactiveEntity<T> implements TaskExecutorPair<T> {
     }
 
     @Override
-    public void executeOnException(Throwable throwable) {
+    public void raiseExceptionEvent(Throwable throwable) {
         this.e = throwable;
         //simply use spinning to handle RejectedExecutionException,maybe a better way in the future
         for (; ; ) {

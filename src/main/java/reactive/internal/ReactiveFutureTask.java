@@ -29,7 +29,7 @@ public class ReactiveFutureTask<T> extends FutureTask<T> {
      * since any thread should operate react pair while holding reactFence lock,
      * successfully lock means either events are raised already(need raise event when add pair) or events keep stay still(just add,no further process needed)
      */
-    public void addReactEvent(TaskExecutorPair<T> pair) {
+    public void appendReactEvent(TaskExecutorPair<T> pair) {
         reactFence.lock();
         try {
             if (done.get()) {
@@ -82,13 +82,13 @@ public class ReactiveFutureTask<T> extends FutureTask<T> {
 
     private void raiseEvent(TaskExecutorPair<T> pair) {
         if (super.isCancelled()) {
-            pair.executeOnCancellation();
+            pair.raiseCancellationEvent();
         } else {
             try {
                 T result = super.get();
-                pair.executeOnSuccess(result);
+                pair.raiseSuccessEvent(result);
             } catch (Throwable e) {
-                pair.executeOnException(e);
+                pair.raiseExceptionEvent(e);
             }
         }
     }

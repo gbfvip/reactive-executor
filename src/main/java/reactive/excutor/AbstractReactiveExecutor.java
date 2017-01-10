@@ -59,7 +59,7 @@ public abstract class AbstractReactiveExecutor extends AbstractExecutorService {
                 scheduledFuture.cancel(true);
             }
         });
-        future.addReactEvent(cancelWatcher);
+        future.appendReactEvent(cancelWatcher);
     }
 
     class Worker implements Runnable {
