@@ -4,9 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import reactive.excutor.EscapableExecutor;
-import reactive.internal.ReactiveEntity;
 import reactive.internal.ReactiveFutureTask;
-import reactive.internal.TaskExecutorPair;
 
 import java.util.concurrent.*;
 
@@ -20,8 +18,6 @@ import static org.junit.Assert.assertThat;
 public class BenchMarkV2Test {
 
     private EscapableExecutor escapableExecutor;
-
-    private TaskExecutorPair callback;
 
     private Callable<Boolean> task;
 
@@ -46,7 +42,6 @@ public class BenchMarkV2Test {
                 System.out.println("onCancellation callback run " + Thread.currentThread().getName());
             }
         };
-        callback = new ReactiveEntity(reactiveTask);
     }
 
     @After
@@ -78,7 +73,7 @@ public class BenchMarkV2Test {
             }
         };
         ReactiveFutureTask<Boolean> futureTask = escapableExecutor.submit(task);
-        futureTask.appendReactEvent(callback);
+        futureTask.appendReactEvent(reactiveTask);
         assertThat(futureTask.get(), is(true));
     }
 
@@ -93,7 +88,7 @@ public class BenchMarkV2Test {
             }
         };
         ReactiveFutureTask<Boolean> futureTask = escapableExecutor.submit(task, 2, TimeUnit.SECONDS);
-        futureTask.appendReactEvent(callback);
+        futureTask.appendReactEvent(reactiveTask);
         try {
             futureTask.get();
         } catch (Exception e) {
@@ -113,7 +108,7 @@ public class BenchMarkV2Test {
             }
         };
         ReactiveFutureTask<Boolean> futureTask = escapableExecutor.submit(task);
-        futureTask.appendReactEvent(callback);
+        futureTask.appendReactEvent(reactiveTask);
         futureTask.get();
     }
 
@@ -133,9 +128,9 @@ public class BenchMarkV2Test {
         ReactiveFutureTask<Boolean> futureTask1 = escapableExecutor.submit(task);
         ReactiveFutureTask<Boolean> futureTask2 = escapableExecutor.submit(task);
         for (int index = 13; index < 20; index++) {
-            futureTask1.appendReactEvent(getRandomTask(index, react));
+            futureTask1.appendReactEvent(getRandomTask(index), react);
             if (index == 19) {
-                futureTask2.appendReactEvent(getRandomTask(index, react));
+                futureTask2.appendReactEvent(getRandomTask(index), react);
             }
         }
         assertThat(futureTask1.get(), is(true));
@@ -143,8 +138,8 @@ public class BenchMarkV2Test {
         Thread.sleep(TimeUnit.SECONDS.toMillis(5));
     }
 
-    private ReactiveEntity<Boolean> getRandomTask(final int count, ExecutorService react) {
-        return new ReactiveEntity<>(new ReactiveTask<Boolean>() {
+    private ReactiveTask<Boolean> getRandomTask(final int count) {
+        return new ReactiveTask<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
                 System.out.println(count + " onSuccess " + result + " callback run " + Thread.currentThread().getName());
@@ -159,7 +154,7 @@ public class BenchMarkV2Test {
             public void onCancellation() {
                 System.out.println("onCancellation callback run " + Thread.currentThread().getName());
             }
-        }, react);
+        };
     }
 
     @Test
@@ -174,7 +169,7 @@ public class BenchMarkV2Test {
                 System.out.println("task about to finish " + Thread.currentThread().getName());
             }
         });
-        futureTask.appendReactEvent(new ReactiveEntity(new ReactiveTask() {
+        futureTask.appendReactEvent(new ReactiveTask() {
             @Override
             public void onSuccess(Object result) {
                 System.out.println("onSuccess " + result + " callback run " + Thread.currentThread().getName());
@@ -187,7 +182,7 @@ public class BenchMarkV2Test {
             @Override
             public void onCancellation() {
             }
-        }));
+        });
         assertThat(futureTask.get(), is(nullValue()));
     }
 
@@ -203,7 +198,7 @@ public class BenchMarkV2Test {
                 System.out.println("task about to finish " + Thread.currentThread().getName());
             }
         }, Boolean.TRUE);
-        futureTask.appendReactEvent(new ReactiveEntity(new ReactiveTask() {
+        futureTask.appendReactEvent(new ReactiveTask() {
             @Override
             public void onSuccess(Object result) {
                 System.out.println("onSuccess " + result + " callback run " + Thread.currentThread().getName());
@@ -216,7 +211,7 @@ public class BenchMarkV2Test {
             @Override
             public void onCancellation() {
             }
-        }));
+        });
         assertThat((Boolean) futureTask.get(), is(true));
     }
 

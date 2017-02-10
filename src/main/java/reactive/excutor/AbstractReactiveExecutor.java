@@ -1,7 +1,6 @@
 package reactive.excutor;
 
 import reactive.ReactiveTask;
-import reactive.internal.ReactiveEntity;
 import reactive.internal.ReactiveFutureTask;
 
 import java.util.concurrent.*;
@@ -43,9 +42,9 @@ public abstract class AbstractReactiveExecutor extends AbstractExecutorService {
     protected <T> void initializeWatcher(ReactiveFutureTask<T> future, long delay, TimeUnit timeUnit) {
         Worker work = new Worker(future);
         final ScheduledFuture scheduledFuture = doorkeeper.schedule(work, delay, timeUnit);
-        ReactiveEntity cancelWatcher = new ReactiveEntity(new ReactiveTask<Boolean>() {
+        future.appendReactEvent(new ReactiveTask<T>() {
             @Override
-            public void onSuccess(Boolean result) {
+            public void onSuccess(T result) {
                 scheduledFuture.cancel(true);
             }
 
@@ -59,7 +58,6 @@ public abstract class AbstractReactiveExecutor extends AbstractExecutorService {
                 scheduledFuture.cancel(true);
             }
         });
-        future.appendReactEvent(cancelWatcher);
     }
 
     class Worker implements Runnable {

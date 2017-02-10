@@ -1,9 +1,12 @@
 package reactive.internal;
 
+import reactive.ReactiveTask;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
@@ -29,8 +32,8 @@ public class ReactiveFutureTask<T> extends FutureTask<T> {
      * since any thread should operate react pair while holding reactFence lock,
      * successfully lock means either events are raised already(need raise event when add pair) or events keep stay still(just add,no further process needed)
      */
-    //todo should try to split reactive entity,no need to force caller implement all three event response
-    public void appendReactEvent(TaskExecutorPair<T> pair) {
+    public void appendReactEvent(ReactiveTask<T> task, ExecutorService... handler) {
+        TaskExecutorPair<T> pair = new ReactiveEntity<>(task, handler);
         reactFence.lock();
         try {
             if (done.get()) {

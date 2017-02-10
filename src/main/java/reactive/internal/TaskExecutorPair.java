@@ -1,14 +1,9 @@
 package reactive.internal;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 /**
  * Created by GaoBinfang on 2016/11/11-15:00.
  */
 public interface TaskExecutorPair<T> {
-    public static final ExecutorService DEFAULT_REACTIVE_HANDLER = Executors.newFixedThreadPool(1);
-
     /**
      * executed after host task throws exception
      * note that this method will executed probably by another thread(depends on which react executor you use)

@@ -3,6 +3,7 @@ package reactive.internal;
 import reactive.ReactiveTask;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,25 +16,23 @@ import java.util.logging.Logger;
  */
 public class ReactiveEntity<T> implements TaskExecutorPair<T> {
     private static final Logger log = Logger.getLogger(ReactiveEntity.class.getName());
+    public static final ExecutorService DEFAULT_REACTIVE_HANDLER = Executors.newFixedThreadPool(1);
     private ReactiveTask<T> realWork;
     private ExecutorService executor;
     private T result;
     private Throwable e;
 
     /**
-     * using FixedThreadPool as react event handler,suitable for short-live event
+     * when using FixedThreadPool as react event handler,suitable for short-live event
+     * when using given executor as react event handler,suitable for most cases
      */
-    public ReactiveEntity(ReactiveTask reactiveTask) {
+    public ReactiveEntity(ReactiveTask reactiveTask, ExecutorService... executor) {
         realWork = reactiveTask;
-        this.executor = DEFAULT_REACTIVE_HANDLER;
-    }
-
-    /**
-     * using given executor as react event handler,suitable for most cases
-     */
-    public ReactiveEntity(ReactiveTask reactiveTask, ExecutorService executor) {
-        realWork = reactiveTask;
-        this.executor = executor;
+        if (executor.length > 0) {
+            this.executor = executor[0];
+        } else {
+            this.executor = DEFAULT_REACTIVE_HANDLER;
+        }
     }
 
     @Override
