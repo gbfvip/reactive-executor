@@ -29,6 +29,7 @@ public class ReactiveFutureTask<T> extends FutureTask<T> {
      * since any thread should operate react pair while holding reactFence lock,
      * successfully lock means either events are raised already(need raise event when add pair) or events keep stay still(just add,no further process needed)
      */
+    //todo should try to split reactive entity,no need to force caller implement all three event response
     public void appendReactEvent(TaskExecutorPair<T> pair) {
         reactFence.lock();
         try {
