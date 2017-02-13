@@ -77,6 +77,26 @@ public class BenchMarkV2Test {
         assertThat(futureTask.get(), is(true));
     }
 
+    @Test
+    public void testOnSuccess2() throws Exception {
+        task = new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+                System.out.println("task about to finish " + Thread.currentThread().getName());
+                return true;
+            }
+        };
+        ReactiveFutureTask<Boolean> futureTask = escapableExecutor.submit(task);
+        futureTask.onSuccess(new EventResponseFunction<Boolean>() {
+            @Override
+            public void onEventRaise(Boolean luggage) {
+                System.out.println("onSuccess " + luggage + " callback run " + Thread.currentThread().getName());
+            }
+        });
+        assertThat(futureTask.get(), is(true));
+    }
+
     @Test(expected = CancellationException.class)
     public void testOnCancellation() throws Exception {
         task = new Callable<Boolean>() {

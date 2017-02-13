@@ -1,5 +1,6 @@
 package reactive.internal;
 
+import reactive.EventResponseFunction;
 import reactive.ReactiveTask;
 
 import java.util.ArrayList;
@@ -34,6 +35,69 @@ public class ReactiveFutureTask<T> extends FutureTask<T> {
      */
     public void appendReactEvent(ReactiveTask<T> task, ExecutorService... handler) {
         TaskExecutorPair<T> pair = new ReactiveEntity<>(task, handler);
+        fulfillContract(pair);
+    }
+
+    public void onSuccess(final EventResponseFunction<T> task, ExecutorService... handler) {
+        TaskExecutorPair<T> pair = new ReactiveEntity<>(new ReactiveTask<T>() {
+            @Override
+            public void onSuccess(T result) {
+                task.onEventRaise(result);
+            }
+
+            @Override
+            public void onException(Throwable e) {
+
+            }
+
+            @Override
+            public void onCancellation() {
+
+            }
+        }, handler);
+        fulfillContract(pair);
+    }
+
+    public void onCancellation(final EventResponseFunction<T> task, ExecutorService... handler) {
+        TaskExecutorPair<T> pair = new ReactiveEntity<>(new ReactiveTask() {
+            @Override
+            public void onSuccess(Object result) {
+            }
+
+            @Override
+            public void onException(Throwable e) {
+
+            }
+
+            @Override
+            public void onCancellation() {
+                task.onEventRaise(null);
+            }
+        }, handler);
+        fulfillContract(pair);
+    }
+
+    public void onException(final EventResponseFunction<Throwable> task, ExecutorService... handler) {
+        TaskExecutorPair<T> pair = new ReactiveEntity<>(new ReactiveTask<T>() {
+            @Override
+            public void onSuccess(T result) {
+
+            }
+
+            @Override
+            public void onException(Throwable e) {
+                task.onEventRaise(e);
+            }
+
+            @Override
+            public void onCancellation() {
+
+            }
+        }, handler);
+        fulfillContract(pair);
+    }
+
+    private void fulfillContract(TaskExecutorPair<T> pair) {
         reactFence.lock();
         try {
             if (done.get()) {
