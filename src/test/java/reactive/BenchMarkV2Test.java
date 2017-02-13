@@ -108,7 +108,12 @@ public class BenchMarkV2Test {
             }
         };
         ReactiveFutureTask<Boolean> futureTask = escapableExecutor.submit(task, 2, TimeUnit.SECONDS);
-        futureTask.appendReactEvent(reactiveTask);
+        futureTask.onCancellation(new EventResponseFunction<Boolean>() {
+            @Override
+            public void onEventRaise(Boolean luggage) {
+                System.out.println("onCancellation callback run " + Thread.currentThread().getName());
+            }
+        });
         try {
             futureTask.get();
         } catch (Exception e) {
@@ -128,7 +133,12 @@ public class BenchMarkV2Test {
             }
         };
         ReactiveFutureTask<Boolean> futureTask = escapableExecutor.submit(task);
-        futureTask.appendReactEvent(reactiveTask);
+        futureTask.onException(new EventResponseFunction<Throwable>() {
+            @Override
+            public void onEventRaise(Throwable luggage) {
+                System.out.println("onException " + luggage + " callback run " + Thread.currentThread().getName());
+            }
+        });
         futureTask.get();
     }
 
