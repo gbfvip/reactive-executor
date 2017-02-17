@@ -22,7 +22,7 @@ public class EscapableExecutor extends AbstractReactiveExecutor {
      * use ScheduledThreadPool and single thread for self escape watcher
      */
     public EscapableExecutor(ExecutorService executor) {
-        minion = executor;
+        underling = executor;
         doorkeeper = Executors.newScheduledThreadPool(1);
     }
 
@@ -31,41 +31,41 @@ public class EscapableExecutor extends AbstractReactiveExecutor {
      * use ScheduledThreadPool and single thread for self escape watcher
      */
     public EscapableExecutor() {
-        minion = Executors.newCachedThreadPool();
+        underling = Executors.newCachedThreadPool();
         doorkeeper = Executors.newScheduledThreadPool(1);
     }
 
     @Override
     public void shutdown() {
         doorkeeper.shutdown();
-        minion.shutdown();
+        underling.shutdown();
     }
 
     @Override
     public List<Runnable> shutdownNow() {
         doorkeeper.shutdownNow();
-        return minion.shutdownNow();
+        return underling.shutdownNow();
     }
 
     @Override
     public boolean isShutdown() {
-        return minion.isShutdown();
+        return underling.isShutdown();
     }
 
     @Override
     public boolean isTerminated() {
-        return minion.isTerminated();
+        return underling.isTerminated();
     }
 
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        return minion.awaitTermination(timeout, unit);
+        return underling.awaitTermination(timeout, unit);
     }
 
     @Deprecated
     @Override
     public void execute(Runnable command) {
-        minion.execute(command);
+        underling.execute(command);
     }
 
     @Override

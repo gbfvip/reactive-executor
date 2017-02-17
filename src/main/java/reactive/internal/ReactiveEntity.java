@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  */
 public class ReactiveEntity<T> implements TaskExecutorPair<T> {
     private static final Logger log = Logger.getLogger(ReactiveEntity.class.getName());
-    public static final ExecutorService DEFAULT_REACTIVE_HANDLER = Executors.newFixedThreadPool(1);
+    public static final ExecutorService EVENT_HANDLER = Executors.newFixedThreadPool(1);
     private ReactiveTask<T> realWork;
     private ExecutorService executor;
     private T result;
@@ -31,7 +31,7 @@ public class ReactiveEntity<T> implements TaskExecutorPair<T> {
         if (executor.length > 0) {
             this.executor = executor[0];
         } else {
-            this.executor = DEFAULT_REACTIVE_HANDLER;
+            this.executor = EVENT_HANDLER;
         }
     }
 

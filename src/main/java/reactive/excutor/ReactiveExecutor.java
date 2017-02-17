@@ -16,7 +16,7 @@ public class ReactiveExecutor extends AbstractReactiveExecutor {
      * store ordinary executor as underling,and this underling will take responsibility to execute submitted tasks
      */
     public ReactiveExecutor(ExecutorService executor) {
-        minion = executor;
+        underling = executor;
     }
 
     /**
@@ -29,32 +29,32 @@ public class ReactiveExecutor extends AbstractReactiveExecutor {
      * only RAM-style tasks are recommend for this ReactiveExecutor
      */
     public ReactiveExecutor() {
-        minion = Executors.newCachedThreadPool();
+        underling = Executors.newCachedThreadPool();
     }
 
     @Override
     public void shutdown() {
-        minion.shutdown();
+        underling.shutdown();
     }
 
     @Override
     public List<Runnable> shutdownNow() {
-        return minion.shutdownNow();
+        return underling.shutdownNow();
     }
 
     @Override
     public boolean isShutdown() {
-        return minion.isShutdown();
+        return underling.isShutdown();
     }
 
     @Override
     public boolean isTerminated() {
-        return minion.isTerminated();
+        return underling.isTerminated();
     }
 
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        return minion.awaitTermination(timeout, unit);
+        return underling.awaitTermination(timeout, unit);
     }
 
     /**
@@ -69,6 +69,6 @@ public class ReactiveExecutor extends AbstractReactiveExecutor {
     @Deprecated
     @Override
     public void execute(Runnable command) {
-        minion.execute(command);
+        underling.execute(command);
     }
 }

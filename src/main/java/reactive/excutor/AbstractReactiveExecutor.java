@@ -11,7 +11,7 @@ import java.util.concurrent.*;
  * only difference is construct ReactiveFutureTask when calling newTaskFor
  */
 public abstract class AbstractReactiveExecutor extends AbstractExecutorService {
-    protected ExecutorService minion;
+    protected ExecutorService underling;
     protected ScheduledExecutorService doorkeeper;
 
     @Override
