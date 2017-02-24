@@ -98,6 +98,7 @@ public class ReactiveFutureTask<T> extends FutureTask<T> {
     }
 
     private void fulfillContract(TaskExecutorPair<T> pair) {
+        pair.checkExecutorPolicy();
         reactFence.lock();
         try {
             if (done.get()) {

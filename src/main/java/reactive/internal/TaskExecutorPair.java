@@ -21,4 +21,7 @@ public interface TaskExecutorPair<T> {
      * note that this method will executed probably by another thread(depends on which react executor you use)
      */
     public void raiseExceptionEvent(Throwable e);
+
+
+    void checkExecutorPolicy();
 }
