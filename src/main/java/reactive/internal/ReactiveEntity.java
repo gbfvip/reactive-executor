@@ -103,7 +103,7 @@ public class ReactiveEntity<T> implements TaskExecutorPair<T> {
     public void checkExecutorPolicy() {
         try {
             ThreadPoolExecutor cast = (ThreadPoolExecutor) executor;
-            if (!(cast.getRejectedExecutionHandler() instanceof ThreadPoolExecutor.CallerRunsPolicy)) {
+            if (!(cast.getRejectedExecutionHandler() instanceof ThreadPoolExecutor.CallerRunsPolicy) && cast.getQueue().remainingCapacity() != Integer.MAX_VALUE) {
                 log.warn("executor with non CallerRunsPolicy may have performance concern with capacity limited task queue,please check!");
             }
         } catch (ClassCastException e) {
