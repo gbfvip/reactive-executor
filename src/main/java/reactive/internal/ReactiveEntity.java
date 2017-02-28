@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import reactive.ReactiveTask;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -17,7 +16,6 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class ReactiveEntity<T> implements TaskExecutorPair<T> {
     private static final Logger log = LoggerFactory.getLogger(ReactiveEntity.class.getName());
-    public static final ExecutorService EVENT_HANDLER = Executors.newFixedThreadPool(1);
     private ReactiveTask<T> realWork;
     private ExecutorService executor;
     private T result;
@@ -32,7 +30,7 @@ public class ReactiveEntity<T> implements TaskExecutorPair<T> {
         if (executor.length > 0) {
             this.executor = executor[0];
         } else {
-            this.executor = EVENT_HANDLER;
+            this.executor = EventHandler.INSTANCE.getDefault();
         }
     }
 
