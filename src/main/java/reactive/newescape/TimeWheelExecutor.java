@@ -1,9 +1,9 @@
 package reactive.newescape;
 
 import reactive.internal.Callback;
+import reactive.internal.EventHandler;
 
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * Created by GaoBinfang on 2016/12/16-11:26.
  */
 public class TimeWheelExecutor {
-    private ScheduledExecutorService underling = Executors.newScheduledThreadPool(1);
+    private ScheduledExecutorService underling = EventHandler.INSTANCE.getScheduledReactive();
     private long interval;
 
     public TimeWheelExecutor(long interval, TimeUnit unit) {

@@ -1,11 +1,11 @@
 package reactive.excutor;
 
+import reactive.internal.EventHandler;
 import reactive.internal.ReactiveFutureTask;
 
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,7 +23,7 @@ public class EscapableExecutor extends AbstractReactiveExecutor {
      */
     public EscapableExecutor(ExecutorService executor) {
         underling = executor;
-        doorkeeper = Executors.newScheduledThreadPool(1);
+        doorkeeper = EventHandler.INSTANCE.getScheduledReactive();
     }
 
     /**
@@ -31,8 +31,8 @@ public class EscapableExecutor extends AbstractReactiveExecutor {
      * use ScheduledThreadPool and single thread for self escape watcher
      */
     public EscapableExecutor() {
-        underling = Executors.newCachedThreadPool();
-        doorkeeper = Executors.newScheduledThreadPool(1);
+        underling = EventHandler.INSTANCE.getUnboundedReusableUnsafeReactive();
+        doorkeeper = EventHandler.INSTANCE.getScheduledReactive();
     }
 
     @Override

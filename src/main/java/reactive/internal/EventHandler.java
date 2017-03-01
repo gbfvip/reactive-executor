@@ -2,6 +2,7 @@ package reactive.internal;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -18,5 +19,13 @@ public enum EventHandler {
 
     ExecutorService getDefault() {
         return this.delegate;
+    }
+
+    public ScheduledExecutorService getScheduledReactive() {
+        return Executors.newScheduledThreadPool(1);
+    }
+
+    public ExecutorService getUnboundedReusableUnsafeReactive() {
+        return Executors.newCachedThreadPool();
     }
 }

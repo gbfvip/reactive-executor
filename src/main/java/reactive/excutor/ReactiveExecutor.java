@@ -1,8 +1,9 @@
 package reactive.excutor;
 
+import reactive.internal.EventHandler;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -29,7 +30,7 @@ public class ReactiveExecutor extends AbstractReactiveExecutor {
      * only RAM-style tasks are recommend for this ReactiveExecutor
      */
     public ReactiveExecutor() {
-        underling = Executors.newCachedThreadPool();
+        underling = EventHandler.INSTANCE.getUnboundedReusableUnsafeReactive();
     }
 
     @Override
