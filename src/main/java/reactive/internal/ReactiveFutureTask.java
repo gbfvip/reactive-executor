@@ -147,6 +147,7 @@ public class ReactiveFutureTask<T> extends FutureTask<T> {
                 raiseEvent(pair);
             }
         }
+        super.done();
     }
 
     private void raiseEvent(TaskExecutorPair<T> pair) {
